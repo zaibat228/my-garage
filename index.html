@@ -1,0 +1,1076 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Мой гараж</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 42px 20px 64px;
+      background: #f5f2eb;
+      color: #292b27;
+      font-family: "Trebuchet MS", sans-serif;
+    }
+
+    main { max-width: 720px; margin: auto; }
+
+    @keyframes rise-in {
+      from { opacity: 0; translate: 0 14px; }
+      to { opacity: 1; translate: 0 0; }
+    }
+
+    main > .tag, main > h1, main > p,
+    main > section.card, main > .action-grid, main > .car-summary {
+      animation: rise-in 520ms cubic-bezier(.2, .7, .2, 1) both;
+    }
+
+    main > .tag { animation-delay: 40ms; }
+    main > h1 { animation-delay: 100ms; }
+    main > p { animation-delay: 160ms; }
+    main > .action-grid { animation-delay: 220ms; }
+    main > section.card:nth-of-type(1) { animation-delay: 220ms; }
+    main > section.card:nth-of-type(2) { animation-delay: 280ms; }
+    main > section.card:nth-of-type(3) { animation-delay: 340ms; }
+    main > section.card:nth-of-type(4) { animation-delay: 400ms; }
+    main > section.card:nth-of-type(5) { animation-delay: 460ms; }
+    main > section.card:nth-of-type(6) { animation-delay: 520ms; }
+    main > section.card:nth-of-type(7) { animation-delay: 580ms; }
+
+    .tag {
+      color: #a45b42;
+      font-size: 12px;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    h1 { font-size: 38px; margin: 12px 0 8px; }
+
+    h2 { margin-top: 0; }
+
+    .muted { color: #77786f; }
+
+    .card {
+      background: #fffefa;
+      border: 1px solid #e8e1d5;
+      border-radius: 12px;
+      padding: 22px;
+      margin-top: 18px;
+      box-shadow: 0 5px 18px rgb(65 53 37 / 4%);
+      transition: transform 220ms ease, box-shadow 220ms ease,
+        border-color 220ms ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgb(65 53 37 / 9%);
+      border-color: #d7c8b3;
+    }
+
+    .car {
+      background: linear-gradient(125deg, #fffefa, #eee6d8);
+      border-color: #e2d6c3;
+    }
+
+    .car h2 { margin: 10px 0; font-size: 25px; }
+
+    .label {
+      color: #77786f;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .amount {
+      color: #a45b42;
+      font-size: 32px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .action-tile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      min-height: 96px;
+      padding: 16px;
+      border: 1px solid #e8e1d5;
+      border-radius: 12px;
+      background: #fffefa;
+      color: #292b27;
+      text-align: left;
+      box-shadow: 0 5px 18px rgb(65 53 37 / 4%);
+    }
+
+    .action-tile:hover {
+      transform: translateY(-3px);
+      border-color: #d7c8b3;
+      background: #fffefa;
+      box-shadow: 0 12px 28px rgb(65 53 37 / 9%);
+    }
+
+    .action-icon {
+      display: grid;
+      flex: 0 0 44px;
+      width: 44px;
+      height: 44px;
+      place-items: center;
+      border-radius: 10px;
+      background: #f3e7dd;
+      color: #a45b42;
+      font-size: 21px;
+    }
+
+    .action-copy {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .action-copy strong { font-size: 16px; }
+
+    .action-copy span { color: #77786f; font-size: 13px; }
+
+    .action-arrow {
+      margin-left: auto;
+      color: #a45b42;
+      transition: transform 180ms ease;
+    }
+
+    .action-tile:hover .action-arrow { transform: translate(2px, -2px); }
+
+    .entry-dialog {
+      width: min(540px, calc(100% - 28px));
+      max-height: min(86vh, 760px);
+      overflow: auto;
+      margin: auto;
+      padding: 24px;
+      border: 1px solid #e2d6c3;
+      border-radius: 14px;
+      background: #fffefa;
+      color: #292b27;
+      box-shadow: 0 24px 80px rgb(41 43 39 / 24%);
+    }
+
+    .entry-dialog[open] { animation: dialog-in 220ms ease-out both; }
+
+    @keyframes dialog-in {
+      from { opacity: 0; transform: translateY(10px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .entry-dialog::backdrop {
+      background: rgb(41 43 39 / 42%);
+      backdrop-filter: blur(3px);
+    }
+
+    .dialog-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .dialog-heading h2 { margin: 0; }
+
+    .dialog-close {
+      display: grid;
+      flex: 0 0 38px;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      place-items: center;
+      border-radius: 9px;
+      background: #f3eee6;
+      color: #51463e;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .dialog-close:hover { background: #e8ded0; }
+
+    form {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    input, button {
+      font: inherit;
+      border-radius: 9px;
+      padding: 13px;
+    }
+
+    input {
+      color: #292b27;
+      background: #fffefa;
+      border: 1px solid #d9d2c7;
+      width: 100%;
+      transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #c98b70;
+      box-shadow: 0 0 0 3px rgb(201 139 112 / 18%);
+    }
+
+    label {
+      color: #55574f;
+      font-size: 14px;
+    }
+
+    .car-field { display: grid; gap: 7px; }
+
+    .car-color-field {
+      grid-template-columns: minmax(0, 1fr) 54px;
+      align-items: center;
+    }
+
+    .car-color-field input[type="color"] {
+      grid-column: 2;
+      grid-row: 1;
+      height: 42px;
+      padding: 4px;
+      cursor: pointer;
+    }
+
+    #carForm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: end;
+    }
+
+    #carForm button { grid-column: 2; }
+
+    #fuelForm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .fuel-date-field, .fuel-price-field { grid-column: 1 / -1; }
+
+    .fuel-field {
+      display: grid;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .fuel-input-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 82px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .fuel-slider {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      accent-color: #a45b42;
+      cursor: pointer;
+    }
+
+    .fuel-slider::-webkit-slider-thumb {
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .fuel-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 5px rgb(164 91 66 / 14%);
+    }
+
+    .fuel-slider::-moz-range-thumb {
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .fuel-slider::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 5px rgb(164 91 66 / 14%);
+    }
+
+    .fuel-number { min-width: 0; padding: 9px 7px; }
+
+    #fuelForm button {
+      grid-column: 1 / -1;
+      padding: 11px;
+    }
+
+    button {
+      border: 0;
+      background: #a45b42;
+      color: #fffefa;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 180ms ease, transform 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    button:hover {
+      background: #864832;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 12px rgb(132 72 50 / 18%);
+    }
+
+    button:active { transform: translateY(0) scale(.98); }
+
+    button:focus-visible {
+      outline: 3px solid rgb(164 91 66 / 32%);
+      outline-offset: 3px;
+    }
+
+    .car-summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 250px;
+      width: 100%;
+      gap: 7px;
+      margin-top: 18px;
+      padding: 22px;
+      border: 1px solid #e2d6c3;
+      border-radius: 12px;
+      background: linear-gradient(125deg, #fffefa, #eee6d8);
+      color: #292b27;
+      text-align: left;
+      box-shadow: 0 5px 18px rgb(65 53 37 / 4%);
+      transition: transform 220ms ease, box-shadow 220ms ease,
+        border-color 220ms ease;
+    }
+
+    .car-summary:hover {
+      transform: translateY(-3px);
+      border-color: #d7c8b3;
+      background: linear-gradient(125deg, #fffefa, #eee6d8);
+      box-shadow: 0 12px 28px rgb(65 53 37 / 9%);
+    }
+
+    .car-summary-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 25px;
+    }
+
+    .car-summary-title .action-arrow { font-size: 17px; }
+
+    .car-summary-note { color: #77786f; font-size: 13px; }
+
+    .car-summary-name { overflow-wrap: anywhere; }
+
+    .car-illustration {
+      grid-column: 2;
+      grid-row: 1 / span 3;
+      align-self: center;
+      width: 100%;
+      max-width: 250px;
+      overflow: visible;
+      transition: transform 240ms ease;
+    }
+
+    .car-summary:hover .car-illustration { transform: translateX(-3px) scale(1.03); }
+
+    .car-body { fill: var(--car-color, #6d8790); }
+
+    .expense {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-top: 1px solid #e8e1d5;
+      padding: 14px 0;
+      animation: rise-in 320ms ease both;
+    }
+
+    .expense button {
+      background: #eee8dd;
+      color: #51463e;
+      padding: 8px 11px;
+    }
+
+    .expense button:hover { background: #e2d7c8; }
+
+    .empty { color: #77786f; padding: 16px 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+
+      .card:hover, button:hover, button:active,
+      .action-tile:hover .action-arrow,
+      .fuel-slider::-webkit-slider-thumb:hover,
+      .fuel-slider::-moz-range-thumb:hover,
+      .car-summary:hover .car-illustration {
+        transform: none;
+      }
+
+      .entry-dialog[open] { animation: none; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 28px 14px 42px; }
+      h1 { font-size: 28px; }
+      .amount { font-size: 27px; }
+      .card { padding: 17px; }
+      #carForm { grid-template-columns: 1fr; }
+      #carForm button { grid-column: 1; }
+      .fuel-input-row { grid-template-columns: 1fr; gap: 4px; }
+      .entry-dialog { padding: 18px; }
+      .action-grid { grid-template-columns: 1fr; gap: 10px; }
+      .action-tile { min-height: 82px; }
+      .car-summary { grid-template-columns: minmax(0, 1fr) 140px; padding: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="tag">GARAGE / 001</div>
+    <h1>Мой гараж</h1>
+    <p class="muted">История обслуживания твоего автомобиля</p>
+
+    <button class="car-summary" id="openCarDialog" type="button"
+      aria-haspopup="dialog" aria-controls="carDialog">
+      <span class="label">МОЙ АВТОМОБИЛЬ</span>
+      <span class="car-summary-title">
+        <span id="carTitle">Volkswagen</span>
+        <span class="action-arrow" aria-hidden="true">↗</span>
+      </span>
+      <span class="car-summary-note">Нажми, чтобы изменить автомобиль</span>
+      <svg class="car-illustration" id="carIllustration"
+        viewBox="0 0 240 160" aria-hidden="true">
+        <ellipse cx="120" cy="150" rx="78" ry="5" fill="#cfc3b4"></ellipse>
+        <circle cx="48" cy="122" r="18" fill="#252825"></circle>
+        <circle cx="192" cy="122" r="18" fill="#252825"></circle>
+        <path d="m49 56-20-5q-7-1-9 6l-1 8 27 5zm142 0 20-5q7-1 9 6l1 8-27 5z" fill="#343a3b"></path>
+        <path class="car-body" d="M120 13c-28 0-49 8-64 24L41 58c-6 9-10 21-13 36l-5 22q-2 10 7 17l14 9h1a17 17 0 0 1 34 0h82a17 17 0 0 1 34 0h1l14-9q9-7 7-17l-5-22c-3-15-7-27-13-36l-15-21c-15-16-36-24-64-24z"></path>
+        <path d="m64 55 15-21q13-12 41-12t41 12l15 21q-27 8-56 8t-56-8z" fill="#202b31"></path>
+        <path d="M120 23v39" fill="none" stroke="#dce4e1" stroke-width="2"></path>
+        <path d="M46 69q31-10 58-8m32 0q27-2 58 8" fill="none" stroke="#f4eee3" stroke-width="2"></path>
+        <path d="m38 78 38-7 8 16-43 6zm164 0-38-7-8 16 43 6z" fill="#f2d18e"></path>
+        <path d="M88 82h64v31H88z" fill="#252b2a"></path>
+        <path d="M96 90h48m-48 8h48m-48 8h48" fill="none" stroke="#87908a" stroke-width="2"></path>
+        <path d="M31 116h178v13H31z" fill="#343a3b"></path>
+        <path d="M38 132h164v8H38z" fill="#252825"></path>
+        <rect x="103" y="117" width="34" height="7" fill="#e6e1d8"></rect>
+      </svg>
+    </button>
+
+    <section class="card">
+      <div class="label">ВСЕГО ПОТРАЧЕНО</div>
+      <div class="amount" id="total">0 ₽</div>
+      <p class="muted" id="count">Расходов пока нет</p>
+    </section>
+
+    <div class="action-grid" aria-label="Добавить запись">
+      <button class="action-tile" id="openExpenseDialog" type="button">
+        <span class="action-icon" aria-hidden="true">₽</span>
+        <span class="action-copy">
+          <strong>Добавить расход</strong>
+          <span>Обслуживание, ремонт, детали</span>
+        </span>
+        <span class="action-arrow" aria-hidden="true">↗</span>
+      </button>
+      <button class="action-tile" id="openFuelDialog" type="button">
+        <span class="action-icon" aria-hidden="true">⛽</span>
+        <span class="action-copy">
+          <strong>Записать заправку</strong>
+          <span>Дата, пробег, литры и цена</span>
+        </span>
+        <span class="action-arrow" aria-hidden="true">↗</span>
+      </button>
+    </div>
+
+<section class="card">
+  <div class="label">РАСХОД ТОПЛИВА</div>
+  <div class="amount" id="fuelConsumption">—</div>
+  <p class="muted" id="fuelHint">
+    Добавь две заправки с известным пробегом.
+  </p>
+</section>
+
+<section class="card">
+  <h2>История заправок</h2>
+  <div id="fuelHistory"></div>
+</section>
+
+    <section class="card">
+      <h2>История расходов</h2>
+      <div id="history"></div>
+    </section>
+  </main>
+
+  <dialog class="entry-dialog" id="carDialog"
+    aria-labelledby="carDialogTitle">
+    <div class="dialog-heading">
+      <h2 id="carDialogTitle">Мой автомобиль</h2>
+      <button class="dialog-close" type="button" data-close-dialog
+        aria-label="Закрыть окно">×</button>
+    </div>
+    <form id="carForm">
+      <div class="car-field">
+        <label for="carMakeInput">Марка автомобиля</label>
+        <input id="carMakeInput" list="carMakes" maxlength="60"
+          placeholder="Введите или выберите марку" required>
+        <datalist id="carMakes">
+          <option value="Toyota"></option>
+          <option value="Volkswagen"></option>
+          <option value="Hyundai"></option>
+          <option value="Kia"></option>
+          <option value="Lada"></option>
+          <option value="Renault"></option>
+          <option value="Nissan"></option>
+          <option value="Honda"></option>
+          <option value="BMW"></option>
+          <option value="Mercedes-Benz"></option>
+          <option value="Audi"></option>
+          <option value="Skoda"></option>
+          <option value="Mazda"></option>
+          <option value="Ford"></option>
+          <option value="Chevrolet"></option>
+          <option value="Mitsubishi"></option>
+          <option value="Subaru"></option>
+          <option value="Volvo"></option>
+          <option value="Lexus"></option>
+          <option value="Chery"></option>
+          <option value="Geely"></option>
+          <option value="Haval"></option>
+          <option value="BYD"></option>
+          <option value="Omoda"></option>
+          <option value="Jaecoo"></option>
+          <option value="Москвич"></option>
+          <option value="УАЗ"></option>
+          <option value="ГАЗ"></option>
+          <option value="Porsche"></option>
+          <option value="Peugeot"></option>
+          <option value="Citroen"></option>
+          <option value="Opel"></option>
+          <option value="Suzuki"></option>
+          <option value="Infiniti"></option>
+          <option value="Genesis"></option>
+          <option value="Tesla"></option>
+        </datalist>
+      </div>
+      <div class="car-field">
+        <label for="carModelInput">Модель автомобиля</label>
+        <input id="carModelInput" maxlength="80"
+          placeholder="Например, Passat B6">
+      </div>
+      <div class="car-field car-color-field">
+        <label for="carColorInput">Цвет автомобиля</label>
+        <input id="carColorInput" type="color" value="#6d8790">
+      </div>
+      <button type="submit">Сохранить авто</button>
+    </form>
+  </dialog>
+
+  <dialog class="entry-dialog" id="expenseDialog"
+    aria-labelledby="expenseDialogTitle">
+    <div class="dialog-heading">
+      <h2 id="expenseDialogTitle">Добавить расход</h2>
+      <button class="dialog-close" type="button" data-close-dialog
+        aria-label="Закрыть окно">×</button>
+    </div>
+    <form id="expenseForm">
+      <label for="name">На что потрачено</label>
+      <input id="name" placeholder="Например, замена масла"
+        maxlength="100" required>
+      <label for="price">Сумма, ₽</label>
+      <input id="price" type="number" min="0.01"
+        max="100000000" step="0.01"
+        placeholder="Сумма в рублях" required>
+      <button type="submit">Сохранить расход</button>
+    </form>
+  </dialog>
+
+  <dialog class="entry-dialog" id="fuelDialog"
+    aria-labelledby="fuelDialogTitle">
+    <div class="dialog-heading">
+      <h2 id="fuelDialogTitle">Учёт заправки</h2>
+      <button class="dialog-close" type="button" data-close-dialog
+        aria-label="Закрыть окно">×</button>
+    </div>
+    <p class="muted">Запиши дату, пробег, объём и цену топлива.</p>
+    <form id="fuelForm">
+      <div class="fuel-field fuel-date-field">
+        <label for="fuelDate">Дата заправки</label>
+        <input id="fuelDate" type="date" required>
+      </div>
+
+      <div class="fuel-field">
+        <label for="odometer">Пробег, км</label>
+        <div class="fuel-input-row">
+          <input class="fuel-slider" id="odometerRange" type="range"
+            min="0" max="500000" step="1000" value="270000"
+            aria-label="Пробег на одометре, ползунок">
+          <input class="fuel-number" id="odometer" type="number" min="0"
+            max="10000000" step="1" placeholder="270000" required>
+        </div>
+      </div>
+
+      <div class="fuel-field">
+        <label for="liters">Литры</label>
+        <div class="fuel-input-row">
+          <input class="fuel-slider" id="litersRange" type="range"
+            min="0.1" max="100" step="0.1" value="30"
+            aria-label="Количество литров, ползунок">
+          <input class="fuel-number" id="liters" type="number" min="0.01"
+            max="500" step="0.01" placeholder="30" required>
+        </div>
+      </div>
+
+      <div class="fuel-field fuel-price-field">
+        <label for="fuelPrice">Цена за литр, ₽</label>
+        <div class="fuel-input-row">
+          <input class="fuel-slider" id="fuelPriceRange" type="range"
+            min="20" max="200" step="0.5" value="65.5"
+            aria-label="Цена за литр, ползунок">
+          <input class="fuel-number" id="fuelPrice" type="number" min="0.01"
+            max="100000" step="0.01" placeholder="65.50" required>
+        </div>
+      </div>
+
+      <button type="submit">Сохранить заправку</button>
+    </form>
+  </dialog>
+
+
+<script>
+  // 1. Получаем элементы страницы
+  const storageKey = "my-garage-expenses-v1";
+  const fuelStorageKey = "my-garage-fuel-v1";
+  const carMakeStorageKey = "my-garage-car-make-v1";
+  const carModelStorageKey = "my-garage-car-model-v1";
+  const carColorStorageKey = "my-garage-car-color-v1";
+
+  const form = document.getElementById("expenseForm");
+  const nameInput = document.getElementById("name");
+  const priceInput = document.getElementById("price");
+  const carDialog = document.getElementById("carDialog");
+  const expenseDialog = document.getElementById("expenseDialog");
+  const fuelDialog = document.getElementById("fuelDialog");
+  const carForm = document.getElementById("carForm");
+  const carMakeInput = document.getElementById("carMakeInput");
+  const carModelInput = document.getElementById("carModelInput");
+  const carColorInput = document.getElementById("carColorInput");
+
+  const fuelForm = document.getElementById("fuelForm");
+  const fuelDate = document.getElementById("fuelDate");
+
+  document.getElementById("openExpenseDialog").addEventListener(
+    "click", () => expenseDialog.showModal()
+  );
+  document.getElementById("openCarDialog").addEventListener(
+    "click", () => carDialog.showModal()
+  );
+  document.getElementById("openFuelDialog").addEventListener(
+    "click", () => fuelDialog.showModal()
+  );
+  document.querySelectorAll("[data-close-dialog]").forEach(button => {
+    button.addEventListener("click", () => button.closest("dialog").close());
+  });
+  [carDialog, expenseDialog, fuelDialog].forEach(dialog => {
+    dialog.addEventListener("click", event => {
+      if (event.target === dialog) dialog.close();
+    });
+  });
+  carDialog.addEventListener("close", renderCar);
+  carColorInput.addEventListener("input", () => {
+    document.getElementById("carIllustration").style.setProperty(
+      "--car-color", carColorInput.value
+    );
+  });
+
+  // 2. Загружаем сохранённые данные
+  let expenses = [];
+  let fuelEntries = [];
+  let carMake = "Volkswagen";
+  let carModel = "";
+  let carColor = "#6d8790";
+
+  try {
+    const savedCarMake = localStorage.getItem(carMakeStorageKey);
+    if (savedCarMake && savedCarMake.trim()) {
+      carMake = savedCarMake.trim().slice(0, 60);
+    }
+    const savedCarModel = localStorage.getItem(carModelStorageKey);
+    if (savedCarModel) carModel = savedCarModel.trim().slice(0, 80);
+    const savedCarColor = localStorage.getItem(carColorStorageKey);
+    if (savedCarColor && /^#[0-9a-f]{6}$/i.test(savedCarColor)) {
+      carColor = savedCarColor;
+    }
+  } catch (error) {
+    console.warn("Не удалось загрузить данные автомобиля", error);
+  }
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    if (Array.isArray(saved)) expenses = saved;
+  } catch (error) {
+    console.warn("Не удалось загрузить расходы", error);
+  }
+
+  try {
+    const savedFuel = JSON.parse(
+      localStorage.getItem(fuelStorageKey) || "[]"
+    );
+    if (Array.isArray(savedFuel)) fuelEntries = savedFuel;
+  } catch (error) {
+    console.warn("Не удалось загрузить заправки", error);
+  }
+
+  // 3. Форматируем деньги
+  function money(value) {
+    return value.toLocaleString("ru-RU", {
+      maximumFractionDigits: 2
+    }) + " ₽";
+  }
+
+  // 4. Сохраняем расходы и заправки
+  function save() {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(expenses));
+      return true;
+    } catch (error) {
+      alert("Не удалось сохранить расходы.");
+      return false;
+    }
+  }
+
+  function saveFuel() {
+    try {
+      localStorage.setItem(
+        fuelStorageKey,
+        JSON.stringify(fuelEntries)
+      );
+      return true;
+    } catch (error) {
+      alert("Не удалось сохранить заправки.");
+      return false;
+    }
+  }
+
+  function renderCar() {
+    document.getElementById("carTitle").textContent =
+      [carMake, carModel].filter(Boolean).join(" ");
+    carMakeInput.value = carMake;
+    carModelInput.value = carModel;
+    carColorInput.value = carColor;
+    document.getElementById("carIllustration").style.setProperty(
+      "--car-color", carColor
+    );
+  }
+
+  carForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const nextMake = carMakeInput.value.trim();
+    const nextModel = carModelInput.value.trim();
+    if (!nextMake) {
+      alert("Введи или выбери марку автомобиля.");
+      return;
+    }
+
+    const previousMake = carMake;
+    const previousModel = carModel;
+    const previousColor = carColor;
+
+    try {
+      localStorage.setItem(carMakeStorageKey, nextMake.slice(0, 60));
+      localStorage.setItem(carModelStorageKey, nextModel.slice(0, 80));
+      localStorage.setItem(carColorStorageKey, carColorInput.value);
+      carMake = nextMake.slice(0, 60);
+      carModel = nextModel.slice(0, 80);
+      carColor = carColorInput.value;
+      renderCar();
+      carDialog.close();
+    } catch (error) {
+      carMake = previousMake;
+      carModel = previousModel;
+      carColor = previousColor;
+      alert("Не удалось сохранить данные автомобиля.");
+      renderCar();
+    }
+  });
+
+  renderCar();
+
+  // 5. Показываем историю расходов и общую сумму
+  function render() {
+    const expenseTotal = expenses.reduce(
+      (sum, item) => sum + item.price, 0
+    );
+
+    const fuelTotal = fuelEntries.reduce(
+      (sum, item) => sum + item.liters * item.pricePerLiter, 0
+    );
+
+    document.getElementById("total").textContent =
+      money(expenseTotal + fuelTotal);
+
+    document.getElementById("count").textContent =
+      "Расходов на обслуживание: " + expenses.length +
+      " · Заправок: " + fuelEntries.length;
+
+    const history = document.getElementById("history");
+    history.replaceChildren();
+
+    if (expenses.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "empty";
+      empty.textContent = "Пока пусто. Добавь первый расход!";
+      history.append(empty);
+    }
+
+    [...expenses].reverse().forEach(item => {
+      const row = document.createElement("div");
+      row.className = "expense";
+
+      const info = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = item.name;
+
+      const price = document.createElement("div");
+      price.className = "muted";
+      price.textContent = money(item.price);
+
+      info.append(title, price);
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "Удалить";
+
+      remove.addEventListener("click", () => {
+        const previous = expenses;
+        expenses = expenses.filter(exp => exp.id !== item.id);
+
+        if (save()) {
+          render();
+        } else {
+          expenses = previous;
+        }
+      });
+
+      row.append(info, remove);
+      history.append(row);
+    });
+
+    renderFuel();
+  }
+
+  // 6. Показываем историю заправок и расход топлива
+  function renderFuel() {
+    const history = document.getElementById("fuelHistory");
+    const consumption = document.getElementById("fuelConsumption");
+    const hint = document.getElementById("fuelHint");
+
+    history.replaceChildren();
+
+    const sorted = [...fuelEntries].sort(
+      (a, b) => a.odometer - b.odometer
+    );
+
+    const latest = sorted[sorted.length - 1];
+    const previous = sorted[sorted.length - 2];
+
+    if (latest && previous) {
+      const distance = latest.odometer - previous.odometer;
+
+      if (distance > 0) {
+        consumption.textContent =
+          (latest.liters / distance * 100).toFixed(2) + " л/100 км";
+        hint.textContent = "По последнему интервалу: " + distance + " км.";
+      } else {
+        consumption.textContent = "—";
+        hint.textContent = "Проверь пробег заправок.";
+      }
+    } else {
+      consumption.textContent = "—";
+      hint.textContent =
+        "Для расчёта нужны две заправки с разным пробегом.";
+    }
+
+    if (fuelEntries.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "empty";
+      empty.textContent = "Заправок пока нет.";
+      history.append(empty);
+    }
+
+    [...fuelEntries].sort(
+      (a, b) => b.odometer - a.odometer
+    ).forEach(item => {
+      const row = document.createElement("div");
+      row.className = "expense";
+
+      const info = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = item.date + " · " + item.odometer + " км";
+
+      const details = document.createElement("div");
+      details.className = "muted";
+      details.textContent =
+        item.liters + " л × " + money(item.pricePerLiter) +
+        " = " + money(item.liters * item.pricePerLiter);
+
+      info.append(title, details);
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "Удалить";
+
+      remove.addEventListener("click", () => {
+        const previousEntries = fuelEntries;
+        fuelEntries = fuelEntries.filter(
+          entry => entry.id !== item.id
+        );
+
+        if (saveFuel()) {
+          render();
+        } else {
+          fuelEntries = previousEntries;
+        }
+      });
+
+      row.append(info, remove);
+      history.append(row);
+    });
+  }
+
+  // 7. Добавляем обычный расход
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const name = nameInput.value.trim();
+    const price = Number(priceInput.value);
+
+    if (!name || !Number.isFinite(price) ||
+        price <= 0 || price > 100000000) {
+      alert("Введи название и корректную сумму больше нуля.");
+      return;
+    }
+
+    const previous = expenses;
+    expenses = [...expenses, {
+      id: crypto.randomUUID(),
+      name,
+      price
+    }];
+
+    if (save()) {
+      form.reset();
+      render();
+      expenseDialog.close();
+    } else {
+      expenses = previous;
+    }
+  });
+
+  // 8. Подставляем сегодняшнюю дату
+  function setToday() {
+    const now = new Date();
+    fuelDate.value = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0"),
+      String(now.getDate()).padStart(2, "0")
+    ].join("-");
+  }
+
+  function connectFuelSlider(sliderId, inputId) {
+    const slider = document.getElementById(sliderId);
+    const input = document.getElementById(inputId);
+
+    slider.addEventListener("input", () => {
+      input.value = slider.value;
+    });
+
+    input.addEventListener("input", () => {
+      if (input.value === "") return;
+      const value = Number(input.value);
+      slider.value = Math.min(
+        Number(slider.max),
+        Math.max(Number(slider.min), value)
+      );
+    });
+  }
+
+  connectFuelSlider("odometerRange", "odometer");
+  connectFuelSlider("litersRange", "liters");
+  connectFuelSlider("fuelPriceRange", "fuelPrice");
+
+  setToday();
+
+  // 9. Добавляем заправку
+  fuelForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const date = fuelDate.value;
+    const odometer = Number(
+      document.getElementById("odometer").value
+    );
+    const liters = Number(
+      document.getElementById("liters").value
+    );
+    const pricePerLiter = Number(
+      document.getElementById("fuelPrice").value
+    );
+
+    if (
+      !date ||
+      !Number.isInteger(odometer) ||
+      odometer < 0 ||
+      odometer > 10000000 ||
+      !Number.isFinite(liters) ||
+      liters <= 0 ||
+      liters > 500 ||
+      !Number.isFinite(pricePerLiter) ||
+      pricePerLiter <= 0 ||
+      pricePerLiter > 100000
+    ) {
+      alert("Проверь дату, пробег, литры и цену.");
+      return;
+    }
+
+    if (fuelEntries.some(item => item.odometer === odometer)) {
+      alert("Заправка с таким пробегом уже существует.");
+      return;
+    }
+
+    const previousEntries = fuelEntries;
+
+    fuelEntries = [...fuelEntries, {
+      id: crypto.randomUUID(),
+      date,
+      odometer,
+      liters,
+      pricePerLiter
+    }];
+
+    if (saveFuel()) {
+      fuelForm.reset();
+      setToday();
+      render();
+      fuelDialog.close();
+    } else {
+      fuelEntries = previousEntries;
+    }
+  });
+
+  // 10. Первый показ страницы
+  render();
+</script>
+
+</body>
+</html>
